@@ -26,6 +26,7 @@ def getSonglist(playlistId):
     parser = urlparse(el.attr('href'))
     id = parse_qs(parser.query).get('id')[0]
     song_arr.append({
+      'id': id,
       'url': url_download.format(id),
       'title': el.text()
     })
