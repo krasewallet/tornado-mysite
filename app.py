@@ -1,6 +1,6 @@
 from tornado.web import Application,StaticFileHandler,RequestHandler
 from pathlib import Path
-from utils import songs
+from utils import songs,mail
 import os,json
 
 class MainHandler(RequestHandler):
@@ -14,12 +14,23 @@ class SongsHandler(RequestHandler):
     self.set_header('Content-Type','application/json;charset=utf-8')
     self.write(json.dumps(arr,ensure_ascii = False))
 
+class ClearEmailHandler(RequestHandler):
+  def post(self):
+    email = self.get_argument('email')
+    pwd = self.get_argument('pwd')
+    mail.clearEmail(email,pwd)
+    self.set_header('Content-Type','application/json;charset=utf-8')
+    self.write(json.dumps({
+      "code": 0
+    },ensure_ascii = False))
+
 class MyApplication(Application):
   def __init__(self):
     site_path = Path(os.path.realpath(__file__)).parents[1]/'vue-mysite/dist'
     handlers = [
       (r"/", MainHandler),
       (r"/songs", SongsHandler),
+      (r"/clear", ClearEmailHandler),
       (r"/(.*)", StaticFileHandler, {'path': str(site_path)})
     ]
     settings = {
